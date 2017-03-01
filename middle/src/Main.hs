@@ -1,5 +1,10 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
+
+import DataTypes
+import Http
 
 main :: IO ()
 main = do
-  putStrLn "hello world"
+  grrrrArrg <- getZombie
+  print grrrrArrg
