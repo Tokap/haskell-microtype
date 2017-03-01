@@ -2,35 +2,34 @@
 {-# LANGUAGE DuplicateRecordFields #-} -- Allows for multiple uses of data types
 {-# LANGUAGE DeriveGeneric #-}
 
-module DataTypes where
+module MidDataTypes where
 import Prelude hiding (id)
 
 import Data.Monoid ((<>))
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics
--- import Web.Scotty hiding (body)
 
 --------------------------------------------------------------------------------
 ---------------------------- Social Zombie -------------------------------------
 --------------------------------------------------------------------------------
 
-data SzTwitter = SzTwitter {
+data SzTwitterResponse = SzTwitterResponse {
   count     :: Int,
   page_info :: PageInfo,
   nodes     :: [PostDetails]
 } deriving (Show, Generic)
-instance ToJSON Post
-instance FromJSON Post
+instance ToJSON SzTwitterResponse
+instance FromJSON SzTwitterResponse
 
 
 data PageInfo = PageInfo {
   start_cursor      :: String,
   end_cursor        :: String,
-  has_previous_page :: Bool
+  has_previous_page :: Bool,
   has_next_page     :: Bool
 } deriving (Show, Generic)
-instance ToJSON Post
-instance FromJSON Post
+instance ToJSON PageInfo
+instance FromJSON PageInfo
 
 data GeoLocation = GeoLocation {
 latitude  :: Maybe String,
@@ -40,8 +39,8 @@ state     :: Maybe String,
 city      :: Maybe String,
 zip       :: Maybe String
 } deriving (Show, Generic)
-instance ToJSON Post
-instance FromJSON Post
+instance ToJSON GeoLocation
+instance FromJSON GeoLocation
 
 data PostDetails = PostDetails {
 network_type_code :: Maybe String,
@@ -76,5 +75,5 @@ title             :: Maybe String,
 text              :: Maybe String,
 subtext           :: Maybe String
 } deriving (Show, Generic)
-instance ToJSON Post
-instance FromJSON Post
+instance ToJSON PostDetails
+instance FromJSON PostDetails
