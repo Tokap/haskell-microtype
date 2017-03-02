@@ -3,6 +3,7 @@
 module Http where
 
 import           MidDataTypes
+import           StartDataTypes
 import           Data.Aeson
 import           Network.HTTP.Simple
 
@@ -34,3 +35,9 @@ getZombie network username userId = do
 
     let postOutput = getResponseBody response :: SzTwitterResponse
     return postOutput
+
+hitPrimaryUrl :: IO ResponseWithCallback
+hitPrimaryUrl = do
+  request <- parseRequest "POST http://localhost:3000/network-account/1"
+  response <- httpJSON request
+  return (getResponseBody response :: ResponseWithCallback)

@@ -6,7 +6,6 @@ module StartDataTypes where
 
 import Prelude hiding (id)
 
-import Data.Monoid ((<>))
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics
 
@@ -31,4 +30,20 @@ makeTraversalResponse tId nId uId un nc = TraversalResponse {
   user_id        = uId,
   username       = un,
   network_code   = nc
+}
+
+
+data ResponseWithCallback = ResponseWithCallback {
+  success_callback :: String,
+  fail_callback    :: String,
+  response         :: [TraversalResponse]
+} deriving (Show, Generic)
+instance ToJSON ResponseWithCallback
+instance FromJSON ResponseWithCallback
+
+makeCbResponse :: String -> String -> [TraversalResponse] -> ResponseWithCallback
+makeCbResponse succ_callback fail_callback tr = ResponseWithCallback {
+  success_callback = succ_callback
+, fail_callback = fail_callback
+, response = tr
 }

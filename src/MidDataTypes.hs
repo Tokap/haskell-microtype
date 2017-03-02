@@ -5,7 +5,6 @@
 module MidDataTypes where
 import Prelude hiding (id)
 
-import Data.Monoid ((<>))
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics
 

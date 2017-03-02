@@ -1,10 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Start where
 
--- import StartDataTypes
 import StartDb
+import StartServer
 
 main :: IO ()
 main = do
-  z <- updateTraversal myConnDetails 3 1
-  print z
+  startServer
+  -- z <- updateTraversalInProgress myConnDetails 1
+  -- print z
+  -- z <- getByNetworkId myConnDetails 2
+  -- print z
