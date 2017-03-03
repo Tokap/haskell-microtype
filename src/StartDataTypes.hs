@@ -33,6 +33,9 @@ makeTraversalResponse tId nId uId un nc = TraversalResponse {
 , network_code   = nc
 }
 
+getNetId :: TraversalResponse -> Int
+getNetId tr = net_table_id tr
+
 
 data ResponseWithCallback = ResponseWithCallback {
   callback  :: String

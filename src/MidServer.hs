@@ -18,7 +18,7 @@ deriveZombieUrlAndGet tr =
   getZombie (network_code tr) (username tr) (read $ user_id tr)
 
 
--- Server Start
+-- Start Server
 midServer :: IO ()
 midServer = do
   putStrLn "Starting Server on Port: 4000"

@@ -34,7 +34,7 @@ startServer = do
 
       json (makeCbResponse succUrl genUuid traversalDetails)
 
---- Callback Endpoints:
+--- Callback Endpoint:
     post "/network-account/save/results/:id/" $ do
       pId <- param "id"
       unixTime <- liftAndCatchIO $ getCurrentUnixTime :: ActionM Integer
