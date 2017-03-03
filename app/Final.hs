@@ -6,5 +6,4 @@ import StartDb
 
 main :: IO ()
 main = do
-  z <- updateTraversal myConnDetails 3 1
-  print z
+  putStrLn "Some words go here"
