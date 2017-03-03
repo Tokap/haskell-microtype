@@ -7,6 +7,7 @@ import Prelude hiding (id)
 
 import qualified Data.ByteString.Lazy as BS
 import Data.Aeson (FromJSON, ToJSON)
+import Data.Int (Int64)
 import GHC.Generics
 
 --------------------------------------------------------------------------------
@@ -14,66 +15,66 @@ import GHC.Generics
 --------------------------------------------------------------------------------
 
 data SzTwitterResponse = SzTwitterResponse {
-  count     :: Int,
-  page_info :: PageInfo,
-  nodes     :: [PostDetails]
+  count     :: Int
+, page_info :: PageInfo
+, nodes     :: [PostDetails]
 } deriving (Show, Generic)
 instance ToJSON SzTwitterResponse
 instance FromJSON SzTwitterResponse
 
 
 data PageInfo = PageInfo {
-  start_cursor      :: String,
-  end_cursor        :: String,
-  has_previous_page :: Bool,
-  has_next_page     :: Bool
+  start_cursor      :: String
+, end_cursor        :: String
+, has_previous_page :: Bool
+, has_next_page     :: Bool
 } deriving (Show, Generic)
 instance ToJSON PageInfo
 instance FromJSON PageInfo
 
 data GeoLocation = GeoLocation {
-  latitude  :: Maybe String,
-  longitude :: Maybe String,
-  country   :: Maybe String,
-  state     :: Maybe String,
-  city      :: Maybe String,
-  zip       :: Maybe String
+  latitude  :: Maybe String
+, longitude :: Maybe String
+, country   :: Maybe String
+, state     :: Maybe String
+, city      :: Maybe String
+, zip       :: Maybe String
 } deriving (Show, Generic)
 instance ToJSON GeoLocation
 instance FromJSON GeoLocation
 
 data PostDetails = PostDetails {
-  network_type_code :: Maybe String,
-  foreign_user_id   :: Maybe String,
-  foreign_username  :: Maybe String,
-  foreign_post_id   :: Maybe String,
-  permalink         :: Maybe String,
-  image_url         :: Maybe String,
-  video_url         :: Maybe String,
-  source            :: Maybe String,
-  media_title       :: Maybe String,
-  media_caption     :: Maybe String,
-  media_description :: Maybe String,
-  geolocation       :: GeoLocation,
-  time_posted       :: Maybe Int,
-  expiration_time   :: Maybe Int,
-  view_count        :: Int,
-  replay_count      :: Int,
-  comment_count     :: Int,
-  like_count        :: Int,
-  dislike_count     :: Int,
-  favorite_count    :: Int,
-  share_count       :: Int,
-  is_image          :: Bool,
-  is_video          :: Bool,
-  is_edited         :: Bool,
-  is_ad             :: Bool,
-  is_origin         :: Bool,
-  is_reply          :: Bool,
-  tags              :: Maybe [String],
-  title             :: Maybe String,
-  text              :: Maybe String,
-  subtext           :: Maybe String
+  network_type_code :: Maybe String
+, foreign_user_id   :: Maybe String
+, foreign_username  :: Maybe String
+, foreign_post_id   :: Maybe String
+, permalink         :: Maybe String
+, image_url         :: Maybe String
+, video_url         :: Maybe String
+, source            :: Maybe String
+, media_title       :: Maybe String
+, media_caption     :: Maybe String
+, media_description :: Maybe String
+, geolocation       :: GeoLocation
+, time_posted       :: Maybe Int
+, expiration_time   :: Maybe Int
+, view_count        :: Int
+, replay_count      :: Int
+, comment_count     :: Int
+, like_count        :: Int
+, dislike_count     :: Int
+, favorite_count    :: Int
+, share_count       :: Int
+, is_image          :: Bool
+, is_video          :: Bool
+, is_edited         :: Bool
+, is_ad             :: Bool
+, is_origin         :: Bool
+, is_reply          :: Bool
+, tags              :: Maybe [String]
+, title             :: Maybe String
+, text              :: Maybe String
+, subtext           :: Maybe String
 } deriving (Show, Generic)
 instance ToJSON PostDetails
 instance FromJSON PostDetails
@@ -85,15 +86,14 @@ data RequestDetails = RequestDetails {
 instance ToJSON RequestDetails
 instance FromJSON RequestDetails
 
+
 data NetworkPostData = NetworkPostData {
-  network_account_id :: Int,
-  post_data          :: BS.ByteString
+  network_account_id :: Int
+, post_data          :: BS.ByteString
 } deriving (Show, Generic)
--- instance ToJSON NetworkPostData
--- instance FromJSON NetworkPostData
 
 makeNpdObject :: Int -> BS.ByteString -> NetworkPostData
-makeNpdObject naId postData = NetworkPostData{
+makeNpdObject naId postData = NetworkPostData {
   network_account_id = naId
 , post_data          = postData
 }
@@ -103,3 +103,18 @@ getNetworkId npd = network_account_id npd
 
 getPostData :: NetworkPostData -> BS.ByteString
 getPostData npd = post_data npd
+
+
+data Confirmation = Confirmation {
+  confirmation_code :: Int64
+, affected_uuid     :: String
+} deriving (Show, Generic)
+instance ToJSON Confirmation
+instance FromJSON Confirmation
+
+
+makeConfirmation :: Int64 -> String -> Confirmation
+makeConfirmation conf uuid = Confirmation {
+  confirmation_code = conf
+, affected_uuid     = uuid
+}

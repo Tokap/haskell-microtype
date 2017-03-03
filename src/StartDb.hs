@@ -15,33 +15,33 @@ import StartDataTypes
 --------------------------------------------------------------------------------
 
 data ConnectionDetails = ConnectionDetails {
-  host :: String,
-  port :: Word16,
-  user :: String,
-  pass :: String,
-  db   :: String
+  host :: String
+, port :: Word16
+, user :: String
+, pass :: String
+, db   :: String
 }
 
 
 makeConnection :: ConnectionDetails -> IO Connection
 makeConnection connDetails = do
   let connectionInfo = defaultConnectInfo {
-                      connectHost     = (host connDetails),
-                      connectPort     = (port connDetails),
-                      connectUser     = (user connDetails),
-                      connectPassword = (pass connDetails),
-                      connectDatabase = (db connDetails)
+                      connectHost     = (host connDetails)
+                    , connectPort     = (port connDetails)
+                    , connectUser     = (user connDetails)
+                    , connectPassword = (pass connDetails)
+                    , connectDatabase = (db connDetails)
                     }
   conn <- connect connectionInfo
   return conn
 
 myConnDetails :: ConnectionDetails
 myConnDetails = ConnectionDetails {
-  host = "127.0.0.1",
-  port = 3306,
-  user = "root",
-  pass = "",
-  db   = "ip_hoarder"
+  host = "127.0.0.1"
+, port = 3306
+, user = "root"
+, pass = ""
+, db   = "ip_hoarder"
 }
 
 --------------------------------------------------------------------------------
@@ -80,16 +80,25 @@ getTraversalByNetIdQuery = "SELECT \
     \AND `processor_uuid` IS NULL \
     \AND NA.id=?"
 
-updateTraversalStatus :: Query
-updateTraversalStatus = "UPDATE traversal \
-          \SET traversal_status_id=? \
+initialTraversalUpdate :: Query
+initialTraversalUpdate = "UPDATE traversal \
+          \SET traversal_status_id=3,\
+          \processor_uuid=? \
+          \WHERE network_account_id=?;"
+
+finishTraversalUpdate :: Query
+finishTraversalUpdate = "UPDATE traversal \
+          \SET traversal_status_id=1,\
+          \history_completed=1, \
+          \last_updated=? \
           \WHERE network_account_id=?;"
 
 --------------------------------------------------------------------------------
 ----------------------- Traversal Functions ------------------------------------
 --------------------------------------------------------------------------------
 
--- READ:
+--- READ:
+
 getAllTraversals :: ConnectionDetails -> IO [TraversalResponse]
 getAllTraversals connDetails = do
   conn <- makeConnection connDetails
@@ -105,18 +114,16 @@ getByNetworkId connDetails i = do
 
   return $ map ( \(tId, nId, uId, un, nc) -> makeTraversalResponse tId nId uId un nc) xs
 
+--- UPDATE:
 
--- -- UPDATE: (returns number of affected rows)
-updateTraversal :: ConnectionDetails -> Int -> Int -> IO Int64
-updateTraversal connDetails status tId = do
+--- Used For Initial Update & to add UUID
+setTraversalInProgress :: ConnectionDetails -> String -> Int -> IO Int64
+setTraversalInProgress connDetails uuid nId = do
   conn <- makeConnection connDetails
-  execute conn updateTraversalStatus (status :: Int, tId :: Int) :: IO Int64
+  execute conn initialTraversalUpdate (uuid :: String, nId :: Int) :: IO Int64
 
-updateTraversalSuccess :: ConnectionDetails -> Int -> IO Int64
-updateTraversalSuccess connDetails i = updateTraversal connDetails 1 (i :: Int)
-
-updateTraversalFail :: ConnectionDetails -> Int -> IO Int64
-updateTraversalFail connDetails i = updateTraversal connDetails 2 (i :: Int)
-
-updateTraversalInProgress :: ConnectionDetails -> Int -> IO Int64
-updateTraversalInProgress connDetails i = updateTraversal connDetails 3 (i :: Int)
+--- Used Upon Completion - Updates Status
+setTraversalComplete :: ConnectionDetails -> Int -> Integer -> IO Int64
+setTraversalComplete connDetails nId unixStamp = do
+  conn <- makeConnection connDetails
+  execute conn finishTraversalUpdate (unixStamp :: Integer, nId :: Int)

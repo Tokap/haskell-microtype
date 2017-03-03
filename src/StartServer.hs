@@ -8,14 +8,11 @@ import Data.Int (Int64)
 
 import StartDb
 import StartDataTypes
+import Helpers (makeUUID, getCurrentUnixTime)
 
 
 successBase :: String
 successBase = "http://localhost:3000/network-account/save/results/"
-
-failBase :: String
-failBase = "http://localhost:3000/network-account/fail/results/"
-
 
 startServer :: IO ()
 startServer = do
@@ -30,23 +27,18 @@ startServer = do
     post "/network-account/:id/" $ do
       pId <- param "id"
       let succUrl = successBase ++ (show pId)
-      let failUrl = failBase ++ (show pId)
+      genUuid <- liftAndCatchIO $ makeUUID :: ActionM String
 
       traversalDetails <- liftAndCatchIO $ getByNetworkId myConnDetails pId :: ActionM [TraversalResponse]
-      confSave <- liftAndCatchIO $ updateTraversalInProgress myConnDetails pId
+      confSave <- liftAndCatchIO $ setTraversalInProgress myConnDetails genUuid pId
 
-      json (makeCbResponse succUrl failUrl traversalDetails)
+      json (makeCbResponse succUrl genUuid traversalDetails)
 
 --- Callback Endpoints:
     post "/network-account/save/results/:id/" $ do
       pId <- param "id"
-      confSave <- liftAndCatchIO $ updateTraversalSuccess myConnDetails pId
+      unixTime <- liftAndCatchIO $ getCurrentUnixTime :: ActionM Integer
+      confSave <- liftAndCatchIO $ setTraversalComplete myConnDetails pId unixTime
       let finalResponse = (makeFinalResponse (confSave :: Int64)) :: FinalResponse
 
-      json (finalResponse)  -- Returns Rows Affected Currently
-
-    post "/network-account/fail/results/:id/" $ do
-      pId <- param "id"
-      confSave <- liftAndCatchIO $ updateTraversalFail myConnDetails pId
-
-      json confSave -- Returns Rows Affected Currently
+      json finalResponse

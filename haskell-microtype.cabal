@@ -25,3 +25,6 @@ executable haskell-microtype
                      , scotty
                      , bytestring
                      , zlib
+                     , unix-time
+                     , time
+                     , uuid

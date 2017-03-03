@@ -30,8 +30,8 @@ getZombie network username userId = do
 --------------------------------------------------------------------------------
 ------------------- Get & Save Connections -------------------------------------
 --------------------------------------------------------------------------------
-hitGetUrl :: String -> IO ResponseWithCallback
-hitGetUrl url = do
+hitStartUrl :: String -> IO ResponseWithCallback
+hitStartUrl url = do
   request <- parseRequest $ "POST " ++ url
   response <- httpJSON request
   return (getResponseBody response :: ResponseWithCallback)

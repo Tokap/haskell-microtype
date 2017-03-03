@@ -17,8 +17,8 @@ deriveZombieUrlAndGet :: TraversalResponse -> IO SzTwitterResponse
 deriveZombieUrlAndGet tr =
   getZombie (network_code tr) (username tr) (read $ user_id tr)
 
-startServer :: IO ()
-startServer = do
+midServer :: IO ()
+midServer = do
   putStrLn "Starting Server on Port: 4000"
 
   scotty 4000 $ do
@@ -32,7 +32,7 @@ startServer = do
       nId <- param "id"
       reqDetails <- jsonData :: ActionM RequestDetails
       let finalUrl = (destination_url reqDetails) ++ "/" ++ (show (nId :: Int))
-      initResponse <- liftAndCatchIO $ hitGetUrl finalUrl
+      initResponse <- liftAndCatchIO $ hitStartUrl finalUrl
 
       ----- Parse Response & Hit Zombie -------
       let accountDetails = getFirstTraversal (initResponse :: ResponseWithCallback)
@@ -43,12 +43,9 @@ startServer = do
       confSave <- liftAndCatchIO $ insertPostDetails myConnDetails postData
 
       ----- Hit Callback with Outcome -------
-      let callback = (success_callback initResponse)
-      finalSaveResponse <- liftAndCatchIO $ successCallbackConnection callback
+      let myCallback = (callback initResponse)
+      saveResponse <- liftAndCatchIO $ successCallbackConnection myCallback
 
-      json (finalSaveResponse :: FinalResponse)
-
-
-
-      -- json (szResponse :: SzTwitterResponse)
-      -- json (accountDetails :: TraversalResponse)
+      ----- Make & Return Confirmation (status & uuid) -------
+      let closingObj = makeConfirmation (code saveResponse) (uuid initResponse)
+      json (closingObj :: Confirmation)
