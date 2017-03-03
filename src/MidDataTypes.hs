@@ -79,6 +79,9 @@ data PostDetails = PostDetails {
 instance ToJSON PostDetails
 instance FromJSON PostDetails
 
+--------------------------------------------------------------------------------
+---------------------------- Response Data -------------------------------------
+--------------------------------------------------------------------------------
 
 data RequestDetails = RequestDetails {
   destination_url :: String

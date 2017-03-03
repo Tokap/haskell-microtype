@@ -12,20 +12,21 @@ import StartDataTypes
 import Http
 import MidDb
 
-
+-- Small Helper FN
 deriveZombieUrlAndGet :: TraversalResponse -> IO SzTwitterResponse
 deriveZombieUrlAndGet tr =
   getZombie (network_code tr) (username tr) (read $ user_id tr)
 
+
+-- Server Start
 midServer :: IO ()
 midServer = do
   putStrLn "Starting Server on Port: 4000"
 
   scotty 4000 $ do
 --------------------------------------------------------------------------------
----------------------------------- Post Reqs -----------------------------------
+----------------------- Primary Process Reqs -----------------------------------
 --------------------------------------------------------------------------------
---- Init and Process:
     post "/init/network-account/:id" $ do
 
       ----- Get Details from Request -------
