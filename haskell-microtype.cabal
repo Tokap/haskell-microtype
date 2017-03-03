@@ -23,3 +23,5 @@ executable haskell-microtype
                      , mysql-simple
                      , http-conduit
                      , scotty
+                     , bytestring
+                     , zlib

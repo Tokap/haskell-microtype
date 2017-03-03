@@ -3,6 +3,8 @@
 module StartServer where
 
 import Web.Scotty
+import Data.Int (Int64)
+
 
 import StartDb
 import StartDataTypes
@@ -39,8 +41,9 @@ startServer = do
     post "/network-account/save/results/:id/" $ do
       pId <- param "id"
       confSave <- liftAndCatchIO $ updateTraversalSuccess myConnDetails pId
+      let finalResponse = (makeFinalResponse (confSave :: Int64)) :: FinalResponse
 
-      json confSave  -- Returns Rows Affected Currently
+      json (finalResponse)  -- Returns Rows Affected Currently
 
     post "/network-account/fail/results/:id/" $ do
       pId <- param "id"

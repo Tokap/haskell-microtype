@@ -8,7 +8,7 @@ import           Data.Aeson
 import           Network.HTTP.Simple
 
 --------------------------------------------------------------------------------
------------------------------------- POSTS -------------------------------------
+--------------------------- SZ Connections -------------------------------------
 --------------------------------------------------------------------------------
 socialZombieBase :: String
 socialZombieBase = "GET http://localhost:3199/user/"
@@ -17,15 +17,6 @@ makeZombieUrl :: String -> String -> Int -> String
 makeZombieUrl network username userId = do
   let myId = show (userId :: Int)
   concat [ socialZombieBase, network, "/id/", myId, "/username/", username, "/timeline" ]
-
-
-getTestZombie :: IO SzTwitterResponse
-getTestZombie = do
-    request <- parseRequest "GET http://localhost:3199/user/twitter/id/613/username/jerry/timeline"
-    response <- httpJSON request
-
-    let szOutput = getResponseBody response :: SzTwitterResponse
-    return szOutput
 
 getZombie :: String -> String -> Int -> IO SzTwitterResponse
 getZombie network username userId = do
@@ -36,8 +27,17 @@ getZombie network username userId = do
     let postOutput = getResponseBody response :: SzTwitterResponse
     return postOutput
 
-hitPrimaryUrl :: IO ResponseWithCallback
-hitPrimaryUrl = do
-  request <- parseRequest "POST http://localhost:3000/network-account/1"
+--------------------------------------------------------------------------------
+------------------- Get & Save Connections -------------------------------------
+--------------------------------------------------------------------------------
+hitGetUrl :: String -> IO ResponseWithCallback
+hitGetUrl url = do
+  request <- parseRequest $ "POST " ++ url
   response <- httpJSON request
   return (getResponseBody response :: ResponseWithCallback)
+
+successCallbackConnection :: String -> IO FinalResponse
+successCallbackConnection url = do
+  request <- parseRequest $ "POST " ++ url
+  response <- httpJSON request
+  return (getResponseBody response :: FinalResponse)

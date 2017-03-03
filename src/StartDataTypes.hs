@@ -8,6 +8,7 @@ import Prelude hiding (id)
 
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics
+import Data.Int (Int64)
 
 --------------------------------------------------------------------------------
 ---------------------------- Social Zombie -------------------------------------
@@ -47,3 +48,16 @@ makeCbResponse succ_callback fail_callback tr = ResponseWithCallback {
 , fail_callback = fail_callback
 , response = tr
 }
+
+getFirstTraversal :: ResponseWithCallback -> TraversalResponse
+getFirstTraversal response' = head (response response')
+
+
+data FinalResponse = FinalResponse {
+  code :: Int64
+} deriving (Show, Generic)
+instance ToJSON FinalResponse
+instance FromJSON FinalResponse
+
+makeFinalResponse :: Int64 -> FinalResponse
+makeFinalResponse status = FinalResponse { code = status }
