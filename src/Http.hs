@@ -6,6 +6,7 @@ import           MidDataTypes
 import           StartDataTypes
 import           Data.Aeson
 import           Network.HTTP.Simple
+import qualified Data.ByteString as BS
 
 --------------------------------------------------------------------------------
 --------------------------- SZ Connections -------------------------------------
@@ -41,3 +42,16 @@ successCallbackConnection url = do
   request <- parseRequest $ "POST " ++ url
   response <- httpJSON request
   return (getResponseBody response :: FinalResponse)
+
+--------------------------------------------------------------------------------
+------------------- Initialization Transaction ---------------------------------
+--------------------------------------------------------------------------------
+initConnection :: RequestDetails -> String -> IO Confirmation
+initConnection requestDetails url = do
+  initialRequest <- parseRequest ("POST " ++ url)
+  let request
+        = setRequestBodyLBS (encode requestDetails)
+        $ initialRequest
+
+  response <- httpJSON request
+  return (getResponseBody response :: Confirmation)

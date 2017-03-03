@@ -5,6 +5,9 @@ import StartDataTypes
 import StartDb
 import MidDataTypes
 import Database.MySQL.Simple
+import Http
+
+-- import Network.HTTP.Client.TLS
 
 import Web.Scotty
 
@@ -12,7 +15,10 @@ main :: IO ()
 main = do
   triggerServer
 
-
+reqDetails :: RequestDetails
+reqDetails = RequestDetails {
+  destination_url = "http://localhost:3000/network-account"
+}
 
 makeServerAddress :: Int -> String
 makeServerAddress i = "http://localhost:4000/init/network-account/" ++ (show i)
@@ -24,10 +30,12 @@ triggerServer = do
     post "/go/nuts/" $ do
       allPending <- liftAndCatchIO $ getAllTraversals myConnDetails
       let addressList = getIdAndProcess allPending
-      json (addressList :: [String])
+
+      confirmed <- liftAndCatchIO $ mapM (initConnection reqDetails) addressList
+      json (confirmed :: [Confirmation])
+
 
 getIdAndProcess :: [TraversalResponse] -> [String]
 getIdAndProcess trList = map (\x ->  makeServerAddress (getNetId x) :: String) trList
 
--- "destination_url": "http://localhost:3000/network-account"
 -- [Confirmation]
