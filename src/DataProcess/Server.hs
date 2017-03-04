@@ -8,14 +8,13 @@ import Web.Scotty
 import Data.Aeson (encode, decode)
 import qualified Codec.Compression.GZip as GZip
 import qualified Data.ByteString.Lazy as BS
-import Control.Concurrent.Async
 
-
+import Confirmation.DataTypes
 import Confirmation.Db
 import DataProcess.DataTypes
-import Confirmation.DataTypes
-import Shared.Http
 import DataProcess.Db
+import Shared.Http
+
 
 -- Small Helper FNs
 deriveZombieUrl :: TraversalDetails -> String

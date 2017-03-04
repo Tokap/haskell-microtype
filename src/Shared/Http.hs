@@ -6,8 +6,9 @@ import           Data.Aeson
 import           Network.HTTP.Simple
 import qualified Data.ByteString as BS
 
-import           DataProcess.DataTypes
 import           Confirmation.DataTypes
+import           DataProcess.DataTypes
+
 --------------------------------------------------------------------------------
 --------------------------- SZ Connections -------------------------------------
 --------------------------------------------------------------------------------

@@ -5,7 +5,6 @@
 module Confirmation.DataTypes where
 
 import Prelude hiding (id)
-
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics
 import Data.Int (Int64)

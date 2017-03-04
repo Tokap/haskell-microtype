@@ -5,7 +5,6 @@ module Confirmation.Server where
 import Web.Scotty
 import Data.Int (Int64)
 
-
 import Confirmation.Db
 import Confirmation.DataTypes
 import Shared.Helpers (makeUUID, getCurrentUnixTime)
