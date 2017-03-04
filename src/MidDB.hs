@@ -14,16 +14,6 @@ import StartDb (ConnectionDetails, makeConnection)
 import MidDataTypes
 import qualified Data.ByteString.Lazy as BS
 
--- insertPostStatement :: Query
--- insertPostStatement = "INSERT into network_post_data (network_account_id,post_data) VALUES (?,?)"
---
--- insertPostDetails :: ConnectionDetails -> NetworkPostData -> IO Int64
--- insertPostDetails connDetails post = do
---   conn <- makeConnection connDetails
---   execute conn insertPostStatement (
---       (getNetworkId post)  :: Int
---     , (getPostData post)   :: BS.ByteString
---     )
 
 insertPostStatement :: Query
 insertPostStatement = "INSERT into network_post_data (network_account_id,post_data,page_number) VALUES (?,?,?)"
@@ -34,5 +24,5 @@ insertPostDetails connDetails post = do
   execute conn insertPostStatement (
       (getNetworkId post)  :: Int
     , (getPostData post)   :: BS.ByteString
-    , (getPageNumber post) :: Int
+    , (0)                  :: Int
     )
