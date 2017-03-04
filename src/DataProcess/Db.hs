@@ -24,5 +24,5 @@ insertPostDetails connDetails post = do
   execute conn insertPostStatement (
       (getNetworkId post)  :: Int
     , (getPostData post)   :: BS.ByteString
-    , (0)                  :: Int
+    , (getPageNumber post) :: Int
     )
