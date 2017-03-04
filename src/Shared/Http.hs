@@ -1,13 +1,13 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module Http where
+module Shared.Http where
 
-import           MidDataTypes
-import           StartDataTypes
 import           Data.Aeson
 import           Network.HTTP.Simple
 import qualified Data.ByteString as BS
 
+import           DataProcess.DataTypes
+import           Confirmation.DataTypes
 --------------------------------------------------------------------------------
 --------------------------- SZ Connections -------------------------------------
 --------------------------------------------------------------------------------

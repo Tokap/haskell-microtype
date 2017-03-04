@@ -2,7 +2,7 @@
 {-# LANGUAGE DuplicateRecordFields #-} -- Allows for multiple uses of data types
 {-# LANGUAGE DeriveGeneric #-}
 
-module StartDataTypes where
+module Confirmation.DataTypes where
 
 import Prelude hiding (id)
 

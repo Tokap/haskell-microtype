@@ -1,17 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Final where
+module Trigger where
 
-import StartDataTypes
-import StartDb
-import MidDataTypes
+import Confirmation.DataTypes
+import Confirmation.Db
+import DataProcess.DataTypes
+import Shared.Http
+
 import Database.MySQL.Simple
-import Http
-
 import Control.Concurrent.Async
 import Web.Scotty
 
 main :: IO ()
-main = triggerServer
+main = startServer
 
 --------------------------------------------------------------------------------
 -------------------------- Request Helpers -------------------------------------
@@ -29,8 +29,8 @@ makeServerAddress i = "http://localhost:4000/init/network-account/" ++ (show i)
 --------------------------------- Server ---------------------------------------
 --------------------------------------------------------------------------------
 
-triggerServer :: IO ()
-triggerServer = do
+startServer :: IO ()
+startServer = do
   putStrLn "Starting Server on Port: 5000"
   scotty 5000 $ do
     post "/go/nuts/" $ do

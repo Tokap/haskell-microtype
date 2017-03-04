@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module MidServer where
+module DataProcess.Server where
 
 import Control.Concurrent.Async
 import Data.Maybe
@@ -11,11 +11,11 @@ import qualified Data.ByteString.Lazy as BS
 import Control.Concurrent.Async
 
 
-import StartDb
-import MidDataTypes
-import StartDataTypes
-import Http
-import MidDb
+import Confirmation.Db
+import DataProcess.DataTypes
+import Confirmation.DataTypes
+import Shared.Http
+import DataProcess.Db
 
 -- Small Helper FNs
 deriveZombieUrl :: TraversalDetails -> String
@@ -36,8 +36,8 @@ nextPageReview nId baseUrl szResponseList = do
 
 
 -- Start Server
-midServer :: IO ()
-midServer = do
+startServer :: IO ()
+startServer = do
   putStrLn "Starting Server on Port: 4000"
 
   scotty 4000 $ do

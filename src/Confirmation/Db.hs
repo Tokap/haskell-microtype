@@ -2,14 +2,14 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module StartDb where
+module Confirmation.Db where
 
 import Control.Monad
 import Database.MySQL.Simple
 import Data.Word (Word16)
 import Data.Int (Int64)
 
-import StartDataTypes
+import Confirmation.DataTypes
 --------------------------------------------------------------------------------
 -------------------------- CONNECTION POOL -------------------------------------
 --------------------------------------------------------------------------------

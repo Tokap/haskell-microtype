@@ -1,14 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module StartServer where
+module Confirmation.Server where
 
 import Web.Scotty
 import Data.Int (Int64)
 
 
-import StartDb
-import StartDataTypes
-import Helpers (makeUUID, getCurrentUnixTime)
+import Confirmation.Db
+import Confirmation.DataTypes
+import Shared.Helpers (makeUUID, getCurrentUnixTime)
 
 
 successBase :: String
