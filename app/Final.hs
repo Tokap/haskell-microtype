@@ -44,5 +44,5 @@ triggerServer = do
 ---------------------------------- Http ---------------------------------------
 --------------------------------------------------------------------------------
 
-getIdAndProcess :: [TraversalResponse] -> [String]
+getIdAndProcess :: [TraversalDetails] -> [String]
 getIdAndProcess trList = map (\x ->  makeServerAddress (getNetId x) :: String) trList

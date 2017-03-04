@@ -29,7 +29,7 @@ startServer = do
       let succUrl = successBase ++ (show pId)
       genUuid <- liftAndCatchIO $ makeUUID :: ActionM String
 
-      traversalDetails <- liftAndCatchIO $ getByNetworkId myConnDetails pId :: ActionM [TraversalResponse]
+      traversalDetails <- liftAndCatchIO $ getByNetworkId myConnDetails pId :: ActionM [TraversalDetails]
       confSave <- liftAndCatchIO $ setTraversalInProgress myConnDetails genUuid pId
 
       json (makeCbResponse succUrl genUuid traversalDetails)

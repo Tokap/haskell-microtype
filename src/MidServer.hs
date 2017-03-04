@@ -15,7 +15,7 @@ import Http
 import MidDb
 
 -- Small Helper FN
-deriveZombieUrl :: TraversalResponse -> String
+deriveZombieUrl :: TraversalDetails -> String
 deriveZombieUrl tr =
   makeZombieUrl (network_code tr) (username tr) (read $ user_id tr)
 
