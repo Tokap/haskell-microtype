@@ -110,16 +110,21 @@ instance FromJSON RequestDetails
 data NetworkPostData = NetworkPostData {
   network_account_id :: Int
 , post_data          :: BS.ByteString
+, page_number        :: Int
 } deriving (Show, Generic)
 
-makeNpdObject :: Int -> BS.ByteString -> NetworkPostData
-makeNpdObject naId postData = NetworkPostData {
+makeNpdObject :: Int -> Int -> BS.ByteString -> NetworkPostData
+makeNpdObject page naId postData = NetworkPostData {
   network_account_id = naId
 , post_data          = postData
+, page_number        = page
 }
 
 getNetworkId :: NetworkPostData -> Int
 getNetworkId npd = network_account_id npd
+
+getPageNumber :: NetworkPostData -> Int
+getPageNumber npd = page_number npd
 
 getPostData :: NetworkPostData -> BS.ByteString
 getPostData npd = post_data npd
