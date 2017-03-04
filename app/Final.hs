@@ -7,13 +7,15 @@ import MidDataTypes
 import Database.MySQL.Simple
 import Http
 
--- import Network.HTTP.Client.TLS
-
+import Control.Concurrent.Async
 import Web.Scotty
 
 main :: IO ()
-main = do
-  triggerServer
+main = triggerServer
+
+--------------------------------------------------------------------------------
+-------------------------- Request Helpers -------------------------------------
+--------------------------------------------------------------------------------
 
 reqDetails :: RequestDetails
 reqDetails = RequestDetails {
@@ -23,6 +25,10 @@ reqDetails = RequestDetails {
 makeServerAddress :: Int -> String
 makeServerAddress i = "http://localhost:4000/init/network-account/" ++ (show i)
 
+--------------------------------------------------------------------------------
+--------------------------------- Server ---------------------------------------
+--------------------------------------------------------------------------------
+
 triggerServer :: IO ()
 triggerServer = do
   putStrLn "Starting Server on Port: 5000"
@@ -31,11 +37,12 @@ triggerServer = do
       allPending <- liftAndCatchIO $ getAllTraversals myConnDetails
       let addressList = getIdAndProcess allPending
 
-      confirmed <- liftAndCatchIO $ mapM (initConnection reqDetails) addressList
+      confirmed <- liftAndCatchIO $ mapConcurrently (initConnection reqDetails) addressList
       json (confirmed :: [Confirmation])
 
+--------------------------------------------------------------------------------
+---------------------------------- Http ---------------------------------------
+--------------------------------------------------------------------------------
 
 getIdAndProcess :: [TraversalResponse] -> [String]
 getIdAndProcess trList = map (\x ->  makeServerAddress (getNetId x) :: String) trList
-
--- [Confirmation]

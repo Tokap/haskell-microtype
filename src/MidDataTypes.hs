@@ -22,10 +22,22 @@ data SzTwitterResponse = SzTwitterResponse {
 instance ToJSON SzTwitterResponse
 instance FromJSON SzTwitterResponse
 
+getNodeLength :: SzTwitterResponse -> Int
+getNodeLength szResponse = length (nodes szResponse)
+
+getNodeLengthSum :: [SzTwitterResponse] -> Int
+getNodeLengthSum szResponseList = sum $ map getNodeLength szResponseList
+
+hasNextPage :: SzTwitterResponse -> Bool
+hasNextPage szResponse = ( has_next_page $ page_info szResponse ) == True
+
+getEndCursor :: SzTwitterResponse -> Maybe String
+getEndCursor szResponse = ( end_cursor $ page_info szResponse )
+
 
 data PageInfo = PageInfo {
-  start_cursor      :: String
-, end_cursor        :: String
+  start_cursor      :: Maybe String
+, end_cursor        :: Maybe String
 , has_previous_page :: Bool
 , has_next_page     :: Bool
 } deriving (Show, Generic)
@@ -111,13 +123,15 @@ getPostData npd = post_data npd
 data Confirmation = Confirmation {
   confirmation_code :: Int64
 , affected_uuid     :: String
+, post_count        :: Int
 } deriving (Show, Generic)
 instance ToJSON Confirmation
 instance FromJSON Confirmation
 
 
-makeConfirmation :: Int64 -> String -> Confirmation
-makeConfirmation conf uuid = Confirmation {
+makeConfirmation :: Int64 -> String -> Int -> Confirmation
+makeConfirmation conf uuid postCount = Confirmation {
   confirmation_code = conf
 , affected_uuid     = uuid
+, post_count        = postCount
 }

@@ -17,11 +17,15 @@ socialZombieBase = "GET http://localhost:3199/user/"
 makeZombieUrl :: String -> String -> Int -> String
 makeZombieUrl network username userId = do
   let myId = show (userId :: Int)
-  concat [ socialZombieBase, network, "/id/", myId, "/username/", username, "/timeline" ]
+  concat [ socialZombieBase, network, "/id/", myId, "/username/", username, "/timeline/" ]
 
 getZombie :: String -> String -> Int -> IO SzTwitterResponse
 getZombie network username userId = do
     let requestUrl = makeZombieUrl network username userId
+    getZombieByUrl requestUrl
+
+getZombieByUrl :: String -> IO SzTwitterResponse
+getZombieByUrl requestUrl = do
     request <- parseRequest requestUrl
     response <- httpJSON request
 
@@ -31,8 +35,8 @@ getZombie network username userId = do
 --------------------------------------------------------------------------------
 ------------------- Get & Save Connections -------------------------------------
 --------------------------------------------------------------------------------
-hitStartUrl :: String -> IO ResponseWithCallback
-hitStartUrl url = do
+getTraversalDetails :: String -> IO ResponseWithCallback
+getTraversalDetails url = do
   request <- parseRequest $ "POST " ++ url
   response <- httpJSON request
   return (getResponseBody response :: ResponseWithCallback)

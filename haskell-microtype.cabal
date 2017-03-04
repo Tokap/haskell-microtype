@@ -28,3 +28,5 @@ executable haskell-microtype
                      , unix-time
                      , time
                      , uuid
+                     , parallel-io
+                     , async
