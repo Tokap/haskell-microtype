@@ -1,14 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Trigger where
 
+import Database.MySQL.Simple
+import Control.Concurrent.Async
+import Web.Scotty
+
 import Confirmation.DataTypes
 import Confirmation.Db
 import DataProcess.DataTypes
 import Shared.Http
 
-import Database.MySQL.Simple
-import Control.Concurrent.Async
-import Web.Scotty
+import Unpack.Db
 
 main :: IO ()
 main = startServer
@@ -39,6 +41,12 @@ startServer = do
 
       confirmed <- liftAndCatchIO $ mapConcurrently (initConnection reqDetails) addressList
       json (confirmed :: [Confirmation])
+
+    post "/unpack/network-account-id/:id/" $ do
+      nId <- param "id"
+      postDetailsList <- liftAndCatchIO $ getPostPagesById myConnDetails nId
+      json (postDetailsList :: [[PostDetails]])
+
 
 --------------------------------------------------------------------------------
 ---------------------------------- Http ---------------------------------------

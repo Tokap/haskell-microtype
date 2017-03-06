@@ -6,7 +6,6 @@ module DataProcess.Db where
 
 import Control.Monad
 import Database.MySQL.Simple
-import Data.Word (Word16)
 import Data.Int (Int64)
 import qualified Data.ByteString.Lazy as BS
 
@@ -16,7 +15,9 @@ import DataProcess.DataTypes
 
 
 insertPostStatement :: Query
-insertPostStatement = "INSERT into network_post_data (network_account_id,post_data,page_number) VALUES (?,?,?)"
+insertPostStatement = "INSERT into network_post_data \
+                      \(network_account_id,post_data,page_number)\
+                      \ VALUES (?,?,?)"
 
 insertPostDetails :: ConnectionDetails -> NetworkPostData -> IO Int64
 insertPostDetails connDetails post = do

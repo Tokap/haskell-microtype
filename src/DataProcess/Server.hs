@@ -17,35 +17,13 @@ import DataProcess.DataTypes
 import DataProcess.Db
 import Shared.Http
 
--- Small Helper FNs
+--------------------------------------------------------------------------------
+----------------------- Support Process Fns ------------------------------------
+--------------------------------------------------------------------------------
+
 deriveZombieUrl :: TraversalDetails -> String
 deriveZombieUrl tr =
   makeZombieUrl (network_code tr) (username tr) (read $ user_id tr)
-
-nextPageReview' :: Int -> String -> [SzTwitterResponse] -> IO [SzTwitterResponse]
-nextPageReview' nId baseUrl szResponseList = do
-  let szResponse = head szResponseList
-
-  if (hasNextPage szResponse)
-    then do
-      let newUrl = baseUrl ++ (fromJust (getEndCursor szResponse)) -- This should instead account for Maybe
-      newResponse <- getZombieByUrl newUrl
-      nextPageReview' nId baseUrl (newResponse:szResponseList)
-    else do
-      return szResponseList
-
-nextPageReview :: Int -> String -> [SzTwitterResponse] -> IO [[PostDetails]]
-nextPageReview nId baseUrl szResponseList = do
-  let szResponse = head szResponseList
-
-  if (hasNextPage szResponse)
-    then do
-      let newUrl = baseUrl ++ (fromJust (getEndCursor szResponse)) -- This should instead account for Maybe
-      newResponse <- getZombieByUrl newUrl
-      nextPageReview nId baseUrl (newResponse:szResponseList)
-    else do
-      return (map getPostDetails szResponseList)
-
 
 endcodeAndCompress :: [PostDetails] -> BS.ByteString
 endcodeAndCompress postDetails = GZip.compress $ encode postDetails
@@ -89,18 +67,8 @@ startServer = do
       let zombieUrl = deriveZombieUrl accountDetails
       szResponse <- liftAndCatchIO $ getZombieByUrl zombieUrl
 
-      -- ----- Parse Response & Hit Zombie Repeatedly -------
-      -- mySzResultList <- liftAndCatchIO $ nextPageReview nId zombieUrl [szResponse]
-      -- let postLength = countPostDetails mySzResultList
-      --
-      -- ------- Save to MySQL As One Blob -------
-      -- let postData = makeNpdObject nId (GZip.compress $ encode mySzResultList)
-      -- confSave <- liftAndCatchIO $ insertPostDetails myConnDetails postData
-
-
------------------ Alt Logic to Process Posts Individually & Async ------------------------
+      ----- Process Posts Individually & Async ----
       pagesAdded <- liftAndCatchIO $ saveAndnextPageReview 1 nId zombieUrl szResponse
-------------------------------------------------------------------------------------------
 
       -- ----- Hit Callback with Outcome -------
       let myCallback = (callback initResponse)
