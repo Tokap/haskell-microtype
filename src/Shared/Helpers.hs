@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Helpers where
+module Shared.Helpers where
 
 import Data.Time.Clock.POSIX
 import Data.UUID.V4

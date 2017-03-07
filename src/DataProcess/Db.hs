@@ -2,20 +2,22 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module MidDb where
+module DataProcess.Db where
 
 import Control.Monad
 import Database.MySQL.Simple
-import Data.Word (Word16)
 import Data.Int (Int64)
-
-import StartDataTypes
-import StartDb (ConnectionDetails, makeConnection)
-import MidDataTypes
 import qualified Data.ByteString.Lazy as BS
 
+import Confirmation.DataTypes
+import Confirmation.Db (ConnectionDetails, makeConnection)
+import DataProcess.DataTypes
+
+
 insertPostStatement :: Query
-insertPostStatement = "INSERT into network_post_data (network_account_id,post_data) VALUES (?,?)"
+insertPostStatement = "INSERT into network_post_data \
+                      \(network_account_id,post_data,page_number)\
+                      \ VALUES (?,?,?)"
 
 insertPostDetails :: ConnectionDetails -> NetworkPostData -> IO Int64
 insertPostDetails connDetails post = do
@@ -23,4 +25,5 @@ insertPostDetails connDetails post = do
   execute conn insertPostStatement (
       (getNetworkId post)  :: Int
     , (getPostData post)   :: BS.ByteString
+    , (getPageNumber post) :: Int
     )

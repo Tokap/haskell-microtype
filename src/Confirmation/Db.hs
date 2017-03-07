@@ -2,14 +2,14 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module StartDb where
+module Confirmation.Db where
 
 import Control.Monad
 import Database.MySQL.Simple
 import Data.Word (Word16)
 import Data.Int (Int64)
 
-import StartDataTypes
+import Confirmation.DataTypes
 --------------------------------------------------------------------------------
 -------------------------- CONNECTION POOL -------------------------------------
 --------------------------------------------------------------------------------
@@ -99,20 +99,20 @@ finishTraversalUpdate = "UPDATE traversal \
 
 --- READ:
 
-getAllTraversals :: ConnectionDetails -> IO [TraversalResponse]
+getAllTraversals :: ConnectionDetails -> IO [TraversalDetails]
 getAllTraversals connDetails = do
   conn <- makeConnection connDetails
   xs <- query_ conn allPendingQuery
 
-  return $ map ( \(tId, nId, uId, un, nc) -> makeTraversalResponse tId nId uId un nc) xs
+  return $ map ( \(tId, nId, uId, un, nc) -> makeTraversalDetails tId nId uId un nc) xs
 
-getByNetworkId :: ConnectionDetails -> Int -> IO [TraversalResponse]
+getByNetworkId :: ConnectionDetails -> Int -> IO [TraversalDetails]
 getByNetworkId connDetails i = do
   let myId = show i
   conn <- makeConnection connDetails
   xs <- query conn getTraversalByNetIdQuery (Only myId)
 
-  return $ map ( \(tId, nId, uId, un, nc) -> makeTraversalResponse tId nId uId un nc) xs
+  return $ map ( \(tId, nId, uId, un, nc) -> makeTraversalDetails tId nId uId un nc) xs
 
 --- UPDATE:
 

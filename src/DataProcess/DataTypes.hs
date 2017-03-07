@@ -2,7 +2,7 @@
 {-# LANGUAGE DuplicateRecordFields #-} -- Allows for multiple uses of data types
 {-# LANGUAGE DeriveGeneric #-}
 
-module MidDataTypes where
+module DataProcess.DataTypes where
 import Prelude hiding (id)
 
 import qualified Data.ByteString.Lazy as BS
@@ -33,6 +33,9 @@ hasNextPage szResponse = ( has_next_page $ page_info szResponse ) == True
 
 getEndCursor :: SzTwitterResponse -> Maybe String
 getEndCursor szResponse = ( end_cursor $ page_info szResponse )
+
+getPostDetails :: SzTwitterResponse -> [PostDetails]
+getPostDetails szResponse = nodes szResponse
 
 
 data PageInfo = PageInfo {
@@ -67,22 +70,22 @@ data PostDetails = PostDetails {
 , media_title       :: Maybe String
 , media_caption     :: Maybe String
 , media_description :: Maybe String
-, geolocation       :: GeoLocation
+, geolocation       :: Maybe GeoLocation
 , time_posted       :: Maybe Int
 , expiration_time   :: Maybe Int
-, view_count        :: Int
-, replay_count      :: Int
-, comment_count     :: Int
-, like_count        :: Int
-, dislike_count     :: Int
-, favorite_count    :: Int
-, share_count       :: Int
-, is_image          :: Bool
-, is_video          :: Bool
-, is_edited         :: Bool
-, is_ad             :: Bool
-, is_origin         :: Bool
-, is_reply          :: Bool
+, view_count        :: Maybe Int
+, replay_count      :: Maybe Int
+, comment_count     :: Maybe Int
+, like_count        :: Maybe Int
+, dislike_count     :: Maybe Int
+, favorite_count    :: Maybe Int
+, share_count       :: Maybe Int
+, is_image          :: Maybe Bool
+, is_video          :: Maybe Bool
+, is_edited         :: Maybe Bool
+, is_ad             :: Maybe Bool
+, is_origin         :: Maybe Bool
+, is_reply          :: Maybe Bool
 , tags              :: Maybe [String]
 , title             :: Maybe String
 , text              :: Maybe String
@@ -91,6 +94,8 @@ data PostDetails = PostDetails {
 instance ToJSON PostDetails
 instance FromJSON PostDetails
 
+countPostDetails :: [[PostDetails]] -> Int
+countPostDetails pdListofLists = sum $ map length pdListofLists
 --------------------------------------------------------------------------------
 ---------------------------- Response Data -------------------------------------
 --------------------------------------------------------------------------------
@@ -105,16 +110,21 @@ instance FromJSON RequestDetails
 data NetworkPostData = NetworkPostData {
   network_account_id :: Int
 , post_data          :: BS.ByteString
+, page_number        :: Int
 } deriving (Show, Generic)
 
-makeNpdObject :: Int -> BS.ByteString -> NetworkPostData
-makeNpdObject naId postData = NetworkPostData {
+makeNpdObject :: Int -> Int -> BS.ByteString -> NetworkPostData
+makeNpdObject page naId postData = NetworkPostData {
   network_account_id = naId
 , post_data          = postData
+, page_number        = page
 }
 
 getNetworkId :: NetworkPostData -> Int
 getNetworkId npd = network_account_id npd
+
+getPageNumber :: NetworkPostData -> Int
+getPageNumber npd = page_number npd
 
 getPostData :: NetworkPostData -> BS.ByteString
 getPostData npd = post_data npd

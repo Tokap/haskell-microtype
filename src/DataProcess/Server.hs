@@ -1,39 +1,53 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module MidServer where
+module DataProcess.Server where
 
 import Control.Concurrent.Async
 import Data.Maybe
 import Web.Scotty
 import Data.Aeson (encode, decode)
 import qualified Codec.Compression.GZip as GZip
+import qualified Data.ByteString.Lazy as BS
+import Control.Concurrent.Async
 
-import StartDb
-import MidDataTypes
-import StartDataTypes
-import Http
-import MidDb
 
--- Small Helper FN
-deriveZombieUrl :: TraversalResponse -> String
+import Confirmation.DataTypes
+import Confirmation.Db
+import DataProcess.DataTypes
+import DataProcess.Db
+import Shared.Http
+
+--------------------------------------------------------------------------------
+----------------------- Support Process Fns ------------------------------------
+--------------------------------------------------------------------------------
+
+deriveZombieUrl :: TraversalDetails -> String
 deriveZombieUrl tr =
   makeZombieUrl (network_code tr) (username tr) (read $ user_id tr)
 
-nextPageReview' :: Int -> String -> [SzTwitterResponse] -> IO [SzTwitterResponse]
-nextPageReview' nId baseUrl szResponseList = do
-  let szResponse = head szResponseList
+endcodeAndCompress :: [PostDetails] -> BS.ByteString
+endcodeAndCompress postDetails = GZip.compress $ encode postDetails
+
+
+saveAndnextPageReview :: Int -> Int -> String -> SzTwitterResponse -> IO Int
+saveAndnextPageReview i nId baseUrl szResponse = do
+  let encodedPosts = endcodeAndCompress (getPostDetails szResponse) :: BS.ByteString
+  let netPostData = makeNpdObject i nId encodedPosts
+  insertPostDetails myConnDetails netPostData
 
   if (hasNextPage szResponse)
     then do
       let newUrl = baseUrl ++ (fromJust (getEndCursor szResponse)) -- This should instead account for Maybe
       newResponse <- getZombieByUrl newUrl
-      nextPageReview' nId baseUrl (newResponse:szResponseList)
+      saveAndnextPageReview (i + 1) nId baseUrl newResponse
     else do
-      return szResponseList
+      return i
+
+
 
 -- Start Server
-midServer :: IO ()
-midServer = do
+startServer :: IO ()
+startServer = do
   putStrLn "Starting Server on Port: 4000"
 
   scotty 4000 $ do
@@ -53,18 +67,13 @@ midServer = do
       let zombieUrl = deriveZombieUrl accountDetails
       szResponse <- liftAndCatchIO $ getZombieByUrl zombieUrl
 
-      ----- Parse Response & Hit Zombie Repeatedly -------
-      mySzResultList <- liftAndCatchIO $ nextPageReview' nId zombieUrl [szResponse]
-      let postLength = getNodeLengthSum mySzResultList
-
-      -- ----- Save to MySQL -------
-      let postData = makeNpdObject nId (GZip.compress $ encode mySzResultList)
-      confSave <- liftAndCatchIO $ insertPostDetails myConnDetails postData
+      ----- Process Post Pages Individually ----
+      pagesAdded <- liftAndCatchIO $ saveAndnextPageReview 1 nId zombieUrl szResponse
 
       -- ----- Hit Callback with Outcome -------
       let myCallback = (callback initResponse)
       saveResponse <- liftAndCatchIO $ successCallbackConnection myCallback
-      --
+
       -- ----- Make & Return Confirmation (status & uuid) -------
-      let closingObj = makeConfirmation (code saveResponse) (uuid initResponse) (postLength)
+      let closingObj = makeConfirmation (code saveResponse) (uuid initResponse) (pagesAdded)
       json (closingObj :: Confirmation)

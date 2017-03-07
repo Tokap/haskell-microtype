@@ -2,10 +2,9 @@
 {-# LANGUAGE DuplicateRecordFields #-} -- Allows for multiple uses of data types
 {-# LANGUAGE DeriveGeneric #-}
 
-module StartDataTypes where
+module Confirmation.DataTypes where
 
 import Prelude hiding (id)
-
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics
 import Data.Int (Int64)
@@ -14,18 +13,18 @@ import Data.Int (Int64)
 ---------------------------- Response Data -------------------------------------
 --------------------------------------------------------------------------------
 
-data TraversalResponse = TraversalResponse {
+data TraversalDetails = TraversalDetails {
   trav_table_id  :: Int
 , net_table_id   :: Int
 , user_id        :: String
 , username       :: String
 , network_code   :: String
 } deriving (Show, Generic)
-instance ToJSON TraversalResponse
-instance FromJSON TraversalResponse
+instance ToJSON TraversalDetails
+instance FromJSON TraversalDetails
 
-makeTraversalResponse :: Int -> Int -> String -> String -> String -> TraversalResponse
-makeTraversalResponse tId nId uId un nc = TraversalResponse {
+makeTraversalDetails :: Int -> Int -> String -> String -> String -> TraversalDetails
+makeTraversalDetails tId nId uId un nc = TraversalDetails {
   trav_table_id  = tId
 , net_table_id   = nId
 , user_id        = uId
@@ -33,26 +32,26 @@ makeTraversalResponse tId nId uId un nc = TraversalResponse {
 , network_code   = nc
 }
 
-getNetId :: TraversalResponse -> Int
+getNetId :: TraversalDetails -> Int
 getNetId tr = net_table_id tr
 
 
 data ResponseWithCallback = ResponseWithCallback {
   callback  :: String
 , uuid      :: String
-, response  :: [TraversalResponse]
+, response  :: [TraversalDetails]
 } deriving (Show, Generic)
 instance ToJSON ResponseWithCallback
 instance FromJSON ResponseWithCallback
 
-makeCbResponse :: String -> String -> [TraversalResponse] -> ResponseWithCallback
+makeCbResponse :: String -> String -> [TraversalDetails] -> ResponseWithCallback
 makeCbResponse succ_callback uuid tr = ResponseWithCallback {
   callback = succ_callback
 , uuid     = uuid
 , response = tr
 }
 
-getFirstTraversal :: ResponseWithCallback -> TraversalResponse
+getFirstTraversal :: ResponseWithCallback -> TraversalDetails
 getFirstTraversal response' = head (response response')
 
 
