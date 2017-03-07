@@ -42,7 +42,7 @@ startServer = do
       confirmed <- liftAndCatchIO $ mapConcurrently (initConnection reqDetails) addressList
       json (confirmed :: [Confirmation])
 
-    post "/unpack/network-account-id/:id/" $ do
+    post "/unpack/network-account/:id/" $ do
       nId <- param "id"
       postDetailsList <- liftAndCatchIO $ getPostPagesById myConnDetails nId
       json (postDetailsList :: [[PostDetails]])

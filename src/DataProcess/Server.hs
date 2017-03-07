@@ -67,7 +67,7 @@ startServer = do
       let zombieUrl = deriveZombieUrl accountDetails
       szResponse <- liftAndCatchIO $ getZombieByUrl zombieUrl
 
-      ----- Process Posts Individually & Async ----
+      ----- Process Post Pages Individually ----
       pagesAdded <- liftAndCatchIO $ saveAndnextPageReview 1 nId zombieUrl szResponse
 
       -- ----- Hit Callback with Outcome -------
